@@ -2,60 +2,51 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController {
     
-    @IBAction private func noButtonClicked(_ sender: Any) {
-        let isCorrectAnswer = false
-        
-        showAnswerResult(isCorrect: questions[currentQuestionIndex].correctAnswer == isCorrectAnswer)
-    }
-    @IBAction private func yesButtonClicked(_ sender: Any) {
-        let isCorrectAnswer = true
-        
-        showAnswerResult(isCorrect: questions[currentQuestionIndex].correctAnswer == isCorrectAnswer)
-    }
-
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var textLabel: UILabel!
     @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet private var noButtonState: UIButton!
+    @IBOutlet private var yesButtonState: UIButton!
     
     private let questions: [QuizQuestion] = [
         QuizQuestion(
-            image: "The Godfather",
+            imageName: "The Godfather",
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: true),
         QuizQuestion(
-            image: "The Dark Knight",
+            imageName: "The Dark Knight",
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: true),
         QuizQuestion(
-            image: "Kill Bill",
+            imageName: "Kill Bill",
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: true),
         QuizQuestion(
-            image: "The Avengers",
+            imageName: "The Avengers",
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: true),
         QuizQuestion(
-            image: "Deadpool",
+            imageName: "Deadpool",
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: true),
         QuizQuestion(
-            image: "The Green Knight",
+            imageName: "The Green Knight",
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: true),
         QuizQuestion(
-            image: "Old",
+            imageName: "Old",
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: false),
         QuizQuestion(
-            image: "The Ice Age Adventures of Buck Wild",
+            imageName: "The Ice Age Adventures of Buck Wild",
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: false),
         QuizQuestion(
-            image: "Tesla",
+            imageName: "Tesla",
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: false),
         QuizQuestion(
-            image: "Vivarium",
+            imageName: "Vivarium",
             text: "Рейтинг этого фильма больше чем 6?",
             correctAnswer: false)
     ]
@@ -71,10 +62,19 @@ final class MovieQuizViewController: UIViewController {
         show(quiz: convert(currentQuestion))
     }
     
+    @IBAction private func noButtonClicked(_ sender: Any) {
+        showAnswerResult(isCorrect: !questions[currentQuestionIndex].correctAnswer)
+        noButtonState.isEnabled = false
+    }
+    @IBAction private func yesButtonClicked(_ sender: Any) {
+        showAnswerResult(isCorrect: questions[currentQuestionIndex].correctAnswer)
+        yesButtonState.isEnabled = false
+    }
+    
     private struct QuizQuestion {
-        var image: String
-        var text: String
-        var correctAnswer: Bool
+        let imageName: String
+        let text: String
+        let correctAnswer: Bool
     }
 
     private struct QuizStepViewModel {
@@ -90,8 +90,8 @@ final class MovieQuizViewController: UIViewController {
     }
 
     private func convert(_ model: QuizQuestion) -> QuizStepViewModel {
-        return QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
+            QuizStepViewModel(
+            image: UIImage(named: model.imageName) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questions.count)"
         )
@@ -138,11 +138,13 @@ final class MovieQuizViewController: UIViewController {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.imageView.layer.borderWidth = 0 // убираю рамку перед появлением нового вопроса
-            self.showNexQuestionOrResult()
+            self.showNextQuestionOrResult()
+            self.noButtonState.isEnabled = true
+            self.yesButtonState.isEnabled = true
         }
     }
     
-    private func showNexQuestionOrResult() {
+    private func showNextQuestionOrResult() {
         if currentQuestionIndex == questions.count - 1 {
             let text = "Ваш результат \(correctAnswer)/\(questions.count)"
             let viewModel = QuizResultsViewModel(
