@@ -12,6 +12,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol = QuestionFactory()
     private var currentQuestion: QuizQuestion?
     private var alertPresenter: AlertPresenter = AlertPresenter()
+    private var statisticService: StatisticServiceProtocol!
     private var currentQuestionIndex: Int = 0
     private var correctAnswer: Int = 0
     
@@ -25,6 +26,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         self.questionFactory.requestNextQuestion()
         
         alertPresenter.setup(viewController: self)
+        
+        statisticService = StatisticService()
     }
 
     // MARK: - QuestionFactoryDelegate
@@ -74,8 +77,15 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func show(quiz result: QuizResultsViewModel) {
+        let message = """
+            Ваш результат: \(correctAnswer)/\(questionsAmount)
+            Количество сыгранных квизов: \(statisticService.gamesCount)
+            Рекорд: \(statisticService.bestGame.correct)/\(statisticService.bestGame.total) (\(statisticService.bestGame.date.dateTimeString))
+            Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
+            """
+        
         let model = AlertModel(title: result.title,
-                               message: result.text,
+                               message: message,
                                buttonText: result.buttonText
         ) { [weak self] in
             guard let self = self else {return}
@@ -110,6 +120,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
     private func showNextQuestionOrResult() {
         if currentQuestionIndex == questionsAmount - 1 {
+            statisticService.store(correct: correctAnswer, total: questionsAmount)
+            
             let text = "Ваш результат \(correctAnswer)/\(questionsAmount)"
             let viewModel = QuizResultsViewModel(
                 title: "Этот раунд закончен!",

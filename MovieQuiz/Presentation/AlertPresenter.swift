@@ -11,7 +11,7 @@ class AlertPresenter {
     
     func setup(viewController: UIViewController) {
         self.viewController = viewController
-    }
+    }	
     
     func show(model: AlertModel) {
         let alert = UIAlertController(
