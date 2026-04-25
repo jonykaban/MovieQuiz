@@ -1,9 +1,3 @@
-//
-//  Untitled.swift
-//  MovieQuiz
-//
-//  Created by Никита Федоров on 24.03.2026.
-//
 import Foundation
 
 protocol StatisticServiceProtocol {
