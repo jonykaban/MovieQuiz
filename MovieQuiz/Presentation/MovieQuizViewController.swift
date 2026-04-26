@@ -52,16 +52,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     func didFailToLoadData(with error: Error) {
         showNetworkError(message: error.localizedDescription)
     }
-
     
     @IBAction private func noButtonClicked(_ sender: Any) {
-        guard let currentQuestion = presenter.currentQuestion else {
-            return
-        }
-        
-        showAnswerResult(isCorrect: !currentQuestion.correctAnswer)
+        presenter.noButtonClicked()
         noButtonState.isEnabled = false
     }
+    
     @IBAction private func yesButtonClicked(_ sender: Any) {
         presenter.yesButtonClicked()
         yesButtonState.isEnabled = false
