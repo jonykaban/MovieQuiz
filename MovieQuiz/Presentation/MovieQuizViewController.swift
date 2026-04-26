@@ -11,7 +11,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
     private let presenter = MovieQuizPresenter()
     private var questionFactory: QuestionFactoryProtocol!
-    private var currentQuestion: QuizQuestion?
     private var alertPresenter: AlertPresenter = AlertPresenter()
     private var statisticService: StatisticServiceProtocol!
     private var correctAnswer: Int = 0
@@ -25,6 +24,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.layer.cornerRadius = 20
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         statisticService = StatisticService()
+        presenter.viewController = self
         
         showLoadingIndicator()
         questionFactory.loadData()
@@ -36,7 +36,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             return
         }
         
-        currentQuestion = question
+        presenter.currentQuestion = question
         let viewModel = presenter.convert(question)
         
         DispatchQueue.main.async{ [weak self] in
@@ -55,7 +55,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
 
     
     @IBAction private func noButtonClicked(_ sender: Any) {
-        guard let currentQuestion = currentQuestion else {
+        guard let currentQuestion = presenter.currentQuestion else {
             return
         }
         
@@ -63,11 +63,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         noButtonState.isEnabled = false
     }
     @IBAction private func yesButtonClicked(_ sender: Any) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
-        
-        showAnswerResult(isCorrect: currentQuestion.correctAnswer)
+        presenter.yesButtonClicked()
         yesButtonState.isEnabled = false
     }
     
@@ -132,7 +128,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.layer.cornerRadius = 20
     }
     
-    private func showAnswerResult(isCorrect: Bool) {
+    func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
             correctAnswer += 1
         }
