@@ -4,8 +4,10 @@ final class MovieQuizPresenter {
     
     var currentQuestion: QuizQuestion?
     weak var viewController: MovieQuizViewController?
+    var questionFactory: QuestionFactoryProtocol!
     
     let questionsAmount: Int = 10
+    var correctAnswers: Int = 0
     private var currentQuestionIndex: Int = 0
     
     func convert(_ model: QuizQuestion) -> QuizStepViewModel {
@@ -42,6 +44,23 @@ final class MovieQuizPresenter {
         
         DispatchQueue.main.async{ [weak self] in
             self?.viewController?.show(quiz: viewModel)
+        }
+    }
+    
+    func showNextQuestionOrResult() {
+        if self.isLastQuestion() {
+            viewController?.statisticService.store(correct: correctAnswers, total: questionsAmount)
+            
+            let text = "Ваш результат \(correctAnswers)/\(self.questionsAmount)"
+            let viewModel = QuizResultsViewModel(
+                title: "Этот раунд закончен!",
+                text: text,
+                buttonText: "Сыграть еще раз")
+            
+            viewController?.show(quiz: viewModel)
+        } else {
+            self.switchToNextQuestion()
+            questionFactory.requestNextQuestion()
         }
     }
     
