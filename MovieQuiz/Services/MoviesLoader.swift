@@ -1,19 +1,12 @@
-//
-//  MoviesLoader.swift
-//  MovieQuiz
-//
-//  Created by Никита Федоров on 13.04.2026.
-//
-
 import Foundation
 
-protocol MoviesLoading {
-    func loadMovies (handler: @escaping (Result<MostPopularMovies, Error>) -> Void)
-}
-
-struct MoviesLoader: MoviesLoading {
+struct MoviesLoader: MoviesLoadingProtocol {
     //MARK: - NetworkClient
-    private let networkClient = NetworkClient()
+    private let networkClient: NetworkRoutingProtocol
+    
+    init(networkClient: NetworkRoutingProtocol = NetworkClient()) {
+        self.networkClient = networkClient
+    }
     
     //MARK: - URL
     private var mostPopularMoviesUrl: URL {

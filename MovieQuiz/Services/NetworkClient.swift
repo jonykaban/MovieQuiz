@@ -1,13 +1,6 @@
-//
-//  NetworkClient.swift
-//  MovieQuiz
-//
-//  Created by Никита Федоров on 11.04.2026.
-//
-
 import Foundation
 
-struct NetworkClient {
+struct NetworkClient: NetworkRoutingProtocol {
     private enum NetworkError: Error {
         case codeError
     }
